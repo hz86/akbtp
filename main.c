@@ -15,7 +15,7 @@ PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
 
 //文件头
 typedef struct HEAD {
-	unsigned int format;	//格式标记
+	unsigned int magic;		//格式标记
 	unsigned int files1;	//文件数量
 	unsigned int files2;	//文件数量
 	unsigned int datahead;	//数据开始位置
@@ -24,11 +24,11 @@ typedef struct HEAD {
 
 //文件信息
 typedef struct INFO {
-	unsigned int unknown;	//未知
+	unsigned int id;		//未知
 	unsigned int offset;	//数据位置
 	unsigned int length;	//数据大小
-	unsigned int level;	//压缩等级 0不压缩
-	unsigned int name;	//名称
+	unsigned int level;		//压缩等级 0不压缩
+	unsigned int name;		//名称
 	unsigned int namelen;	//名称长度
 } INFO, *LPINFO;
 
@@ -115,7 +115,8 @@ int main(void)
 			else if(info.level < 4)
 			{
 				unsigned int slen = 0;
-				((sub_0007C7E8)&asm_sub_0007C7E8)(0, (unsigned int)lpdata, (unsigned int)info.length, (unsigned int)lptmp, (unsigned int)&slen);
+				unsigned int datalen = (info.name - info.offset);
+				((sub_0007C7E8)&asm_sub_0007C7E8)(0, (unsigned int)lpdata, (unsigned int)datalen, (unsigned int)lptmp, (unsigned int)&slen);
 				SceUID wfile = sceIoOpen(lpname, PSP_O_APPEND | PSP_O_CREAT | PSP_O_WRONLY, 0777);
 				sceIoWrite(wfile, lptmp, slen);
 				sceIoClose(wfile);
@@ -123,7 +124,8 @@ int main(void)
 			else
 			{
 				unsigned int slen = 0;
-				((sub_0007C65C)&asm_sub_0007C65C)((unsigned int)lpdata, (unsigned int)info.length, (unsigned int)lptmp, (unsigned int)&slen);
+				unsigned int datalen = (info.name - info.offset);
+				((sub_0007C65C)&asm_sub_0007C65C)((unsigned int)lpdata, (unsigned int)datalen, (unsigned int)lptmp, (unsigned int)&slen);
 				SceUID wfile = sceIoOpen(lpname, PSP_O_APPEND | PSP_O_CREAT | PSP_O_WRONLY, 0777);
 				sceIoWrite(wfile, lptmp, slen);
 				sceIoClose(wfile);
